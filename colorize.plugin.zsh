@@ -14,11 +14,11 @@ if (( $+commands[grc] )); then
 			lspci mount mtr mvn netstat nmap php ping ping2 proftpd ps pv ss \
 			stat sysctl systemctl tcpdump traceroute tune2fs ulimit uptime vmstat wdiff;
 			do
-				which $bin 1>/dev/null 2>&1 && eval <<-EOF
-				function $bin() {
-					\grc --colour=auto $bin "\$@"
-				}
-				EOF
+				if which $bin >/dev/null; then
+					$bin() {
+						\grc --colour=auto $0 "$@"
+					}
+				fi
 		done
 	fi
 fi
