@@ -15,6 +15,10 @@ if (( $+commands[grc] )); then
 
     # Use functions so we can still take advantage of ZSH completion functions
 
+    function ip(){
+      \grc --colour=auto /bin/as "$@"
+    }
+
     function as(){
       \grc --colour=auto /usr/bin/as "$@"
     }
