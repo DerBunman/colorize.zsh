@@ -1,156 +1,26 @@
 #!/bin/zsh
-
-# I use grc to colorize the output of some commands for clarity.
-#
-# brew install grc on OS X to check it out.
-
 PLUGIN_BIN="$(dirname $0)/bin"
 export PATH=${PATH}:${PLUGIN_BIN}
 
 if (( $+commands[grc] )); then
-  GRC=$(which -p grc)
+	GRC=$(which -p grc)
 
-  if [ "$TERM" != dumb ] && [ -n "$GRC" ]; then
-    alias colourify="${GRC} -es --colour=auto"
+	if [ "$TERM" != dumb ] && [ -n "$GRC" ]; then
+		alias colourify="${GRC} -es --colour=auto"
 
-    # Use functions so we can still take advantage of ZSH completion functions
-
-    function ip(){
-      \grc --colour=auto /bin/ip "$@"
-    }
-
-    function as(){
-      \grc --colour=auto /usr/bin/as "$@"
-    }
-
-    function diff(){
-      \grc --colour=auto /usr/bin/diff "$@"
-    }
-
-    if [ -x /usr/bin/dig ]; then
-      function dig(){
-        \grc --colour=auto /usr/bin/dig "$@"
-      }
-    fi
-
-    if [ -x /usr/bin/gas ]; then
-      function gas(){
-        \grc --colour=auto /usr/bin/gas "$@"
-      }
-    fi
-
-    if [ -x /usr/bin/gcc ]; then
-      function gcc(){
-        \grc --colour=auto /usr/bin/gcc "$@"
-      }
-    fi
-
-    if [ -x /usr/bin/g++ ]; then
-      function g++(){
-        \grc --colour=auto /usr/bin/g++ "$@"
-      }
-    fi
-
-    if [ -x /usr/bin/last ]; then
-      function last(){
-        \grc --colour=auto /usr/bin/last "$@"
-      }
-    fi
-
-    if [ -x /usr/bin/ld ]; then
-      function ld(){
-        \grc --colour=auto /usr/bin/ld "$@"
-      }
-    fi
-
-    if [ -x /sbin/ifconfig ]; then
-      function ifconfig(){
-        \grc --colour=auto /sbin/ifconfig "$@"
-      }
-    fi
-
-    # mount was in primordial Unix, but OS X and Linux have it in different paths.
-    if [ -x /bin/mount ]; then
-      function mount(){
-        \grc --colour=auto /bin/mount "$@"
-      }
-    fi
-    if [ -x /sbin/mount ]; then
-      function mount(){
-        \grc --colour=auto /sbin/mount "$@"
-      }
-    fi
-
-    # OS X and Linux have different paths to mtr
-    if [ -x /usr/local/sbin/mtr ]; then
-      function mtr(){
-        \grc --colour=auto /usr/local/sbin/mtr "$@"
-      }
-    fi
-    if [ -x /usr/sbin/mtr ]; then
-      function mtr(){
-        \grc --colour=auto /usr/sbin/mtr "$@"
-      }
-    fi
-
-    # OS X and Linux have different paths to netstat
-    if [ -x /usr/sbin/netstat ]; then
-      function netstat(){
-        \grc --colour=auto /usr/sbin/netstat "$@"
-      }
-    fi
-    if [ -x /bin/netstat ]; then
-      function netstat(){
-        \grc --colour=auto /bin/netstat "$@"
-      }
-    fi
-
-    # OS X and Linux have different paths to ping, of course
-    if [ -x /sbin/ping ]; then
-      function ping(){
-        \grc --colour=auto /sbin/ping "$@"
-      }
-    fi
-    if [ -x /sbin/ping6 ]; then
-      function ping6(){
-        \grc --colour=auto /sbin/ping6 "$@"
-      }
-    fi
-    if [ -x /bin/ping ]; then
-      function ping(){
-        \grc --colour=auto /bin/ping "$@"
-      }
-    fi
-
-    if [ -x /bin/ps ]; then
-      function ps(){
-        \grc --colour=auto /bin/ps "$@"
-      }
-    fi
-
-    # OS X and Linux have different paths to traceroute
-    if [ -x /usr/sbin/traceroute ]; then
-      function traceroute(){
-        \grc --colour=auto /usr/sbin/traceroute "$@"
-      }
-    fi
-    if [ -x /bin/traceroute ]; then
-      function traceroute(){
-        \grc --colour=auto /bin/traceroute "$@"
-      }
-    fi
-    # OS X and Linux have different paths to traceroute6 too
-    if [ -x /usr/sbin/traceroute6 ]; then
-      function traceroute6(){
-        \grc --colour=auto /usr/sbin/traceroute6 "$@"
-      }
-    fi
-    if [ -x /bin/traceroute6 ]; then
-      function traceroute6(){
-        \grc --colour=auto /bin/traceroute6 "$@"
-      }
-    fi
-  fi
+		# Use functions so we can still take advantage of ZSH completion functions
+		for bin in ant blkid configure cvs df diff dig dnf docker du env \
+			fdisk free getfacl getsebool id last ls lsattr lsblk lsmod lsof \
+			lspci mount mtr mvn netstat nmap php ping ping2 proftpd ps pv ss \
+			stat sysctl systemctl tcpdump traceroute tune2fs ulimit uptime vmstat wdiff;
+			do
+				which $bin 1>/dev/null 2>&1 && eval <<-EOF
+				function $bin() {
+					\grc --colour=auto $bin "\$@"
+				}
+				EOF
+		done
+	fi
 fi
 
 # ANSI Color
@@ -188,31 +58,26 @@ ANSI_BG_WHITE="\033[47;47m"
 
 # Configure colors, if available.
 if (( $+commands[tput] )); then
-  tput setaf 1 >&/dev/null
-  c_reset='\[\e[0m\]'
-  # c_user='\[\033[1;33m\]'
-  # c_path='\[\e[0;33m\]'
-  # c_git_clean='\[\e[0;36m\]'
-  # c_git_dirty='\[\e[0;35m\]'
-  c_user=${ANSI_CYAN}
-  c_path=${ANSI_LIGHT_BLUE}
-  c_git_clean=${ANSI_LIGHT_GREEN}
-  c_git_dirty=${ANSI_LIGHT_RED}
+	tput setaf 1 >&/dev/null
+	c_reset='\[\e[0m\]'
+	# c_user='\[\033[1;33m\]'
+	# c_path='\[\e[0;33m\]'
+	# c_git_clean='\[\e[0;36m\]'
+	# c_git_dirty='\[\e[0;35m\]'
+	c_user=${ANSI_CYAN}
+	c_path=${ANSI_LIGHT_BLUE}
+	c_git_clean=${ANSI_LIGHT_GREEN}
+	c_git_dirty=${ANSI_LIGHT_RED}
 else
-  c_reset=
-  c_user=
-  c_path=
-  c_git_clean=
-  c_git_dirty=
+	c_reset=
+	c_user=
+	c_path=
+	c_git_clean=
+	c_git_dirty=
 fi
 
 # Yes, these are a pain to customize. Fortunately, Geoff Greer made an online
 # tool that makes it easy to customize your color scheme and keep them in sync
 # across Linux and OS X/*BSD at http://geoff.greer.fm/lscolors/
-
-if [[ -z "$LSCOLORS" ]]; then
-  export LSCOLORS='exfxcxdxbxegedAbAgacad'
-fi
-if [[ -z "$LS_COLORS" ]]; then
-  export LS_COLORS="di=34;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=1;;41:sg=1;;46:tw=0;42:ow=0;43:"
-fi
+LS_COLORS='no=00;38;5;244:rs=0:di=00;38;5;33:ln=00;38;5;37:mh=00:pi=48;5;230;38;5;136;01:so=48;5;230;38;5;136;01:do=48;5;230;38;5;136;01:bd=48;5;230;38;5;244;01:cd=48;5;230;38;5;244;01:or=48;5;235;38;5;160:su=48;5;160;38;5;230:sg=48;5;136;38;5;230:ca=30;41:tw=48;5;64;38;5;230:ow=48;5;235;38;5;33:st=48;5;33;38;5;230:ex=00;38;5;64:*.tar=00;38;5;61:*.tgz=00;38;5;61:*.arj=00;38;5;61:*.taz=00;38;5;61:*.lzh=00;38;5;61:*.lzma=00;38;5;61:*.tlz=00;38;5;61:*.txz=00;38;5;61:*.zip=00;38;5;61:*.z=00;38;5;61:*.Z=00;38;5;61:*.dz=00;38;5;61:*.gz=00;38;5;61:*.lz=00;38;5;61:*.xz=00;38;5;61:*.bz2=00;38;5;61:*.bz=00;38;5;61:*.tbz=00;38;5;61:*.tbz2=00;38;5;61:*.tz=00;38;5;61:*.deb=00;38;5;61:*.rpm=00;38;5;61:*.jar=00;38;5;61:*.rar=00;38;5;61:*.ace=00;38;5;61:*.zoo=00;38;5;61:*.cpio=00;38;5;61:*.7z=00;38;5;61:*.rz=00;38;5;61:*.apk=00;38;5;61:*.gem=00;38;5;61:*.jpg=00;38;5;136:*.JPG=00;38;5;136:*.jpeg=00;38;5;136:*.gif=00;38;5;136:*.bmp=00;38;5;136:*.pbm=00;38;5;136:*.pgm=00;38;5;136:*.ppm=00;38;5;136:*.tga=00;38;5;136:*.xbm=00;38;5;136:*.xpm=00;38;5;136:*.tif=00;38;5;136:*.tiff=00;38;5;136:*.png=00;38;5;136:*.PNG=00;38;5;136:*.svg=00;38;5;136:*.svgz=00;38;5;136:*.mng=00;38;5;136:*.pcx=00;38;5;136:*.dl=00;38;5;136:*.xcf=00;38;5;136:*.xwd=00;38;5;136:*.yuv=00;38;5;136:*.cgm=00;38;5;136:*.emf=00;38;5;136:*.eps=00;38;5;136:*.CR2=00;38;5;136:*.ico=00;38;5;136:*.tex=00;38;5;245:*.rdf=00;38;5;245:*.owl=00;38;5;245:*.n3=00;38;5;245:*.ttl=00;38;5;245:*.nt=00;38;5;245:*.torrent=00;38;5;245:*.xml=00;38;5;245:*Makefile=00;38;5;245:*Rakefile=00;38;5;245:*build.xml=00;38;5;245:*rc=00;38;5;245:*1=00;38;5;245:*.nfo=00;38;5;245:*README=00;38;5;245:*README.txt=00;38;5;245:*readme.txt=00;38;5;245:*.md=00;38;5;245:*README.markdown=00;38;5;245:*.ini=00;38;5;245:*.yml=00;38;5;245:*.cfg=00;38;5;245:*.conf=00;38;5;245:*.c=00;38;5;245:*.cpp=00;38;5;245:*.cc=00;38;5;245:*.sqlite=00;38;5;245:*.log=00;38;5;240:*.bak=00;38;5;240:*.aux=00;38;5;240:*.lof=00;38;5;240:*.lol=00;38;5;240:*.lot=00;38;5;240:*.out=00;38;5;240:*.toc=00;38;5;240:*.bbl=00;38;5;240:*.blg=00;38;5;240:*~=00;38;5;240:*#=00;38;5;240:*.part=00;38;5;240:*.incomplete=00;38;5;240:*.swp=00;38;5;240:*.tmp=00;38;5;240:*.temp=00;38;5;240:*.o=00;38;5;240:*.pyc=00;38;5;240:*.class=00;38;5;240:*.cache=00;38;5;240:*.aac=00;38;5;166:*.au=00;38;5;166:*.flac=00;38;5;166:*.mid=00;38;5;166:*.midi=00;38;5;166:*.mka=00;38;5;166:*.mp3=00;38;5;166:*.mpc=00;38;5;166:*.ogg=00;38;5;166:*.ra=00;38;5;166:*.wav=00;38;5;166:*.m4a=00;38;5;166:*.axa=00;38;5;166:*.oga=00;38;5;166:*.spx=00;38;5;166:*.xspf=00;38;5;166:*.mov=00;38;5;166:*.MOV=00;38;5;166:*.mpg=00;38;5;166:*.mpeg=00;38;5;166:*.m2v=00;38;5;166:*.mkv=00;38;5;166:*.ogm=00;38;5;166:*.mp4=00;38;5;166:*.m4v=00;38;5;166:*.mp4v=00;38;5;166:*.vob=00;38;5;166:*.qt=00;38;5;166:*.nuv=00;38;5;166:*.wmv=00;38;5;166:*.asf=00;38;5;166:*.rm=00;38;5;166:*.rmvb=00;38;5;166:*.flc=00;38;5;166:*.avi=00;38;5;166:*.fli=00;38;5;166:*.flv=00;38;5;166:*.gl=00;38;5;166:*.m2ts=00;38;5;166:*.divx=00;38;5;166:*.webm=00;38;5;166:*.axv=00;38;5;166:*.anx=00;38;5;166:*.ogv=00;38;5;166:*.ogx=00;38;5;166:';
+export LS_COLORS
