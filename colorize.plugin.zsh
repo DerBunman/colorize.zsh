@@ -10,16 +10,24 @@ if (( $+commands[grc] )); then
 
 		# Use functions so we can still take advantage of ZSH completion functions
 		for bin in ant blkid configure cvs df diff dig dnf docker du env \
-			fdisk free getfacl getsebool id last ls lsattr lsblk lsmod lsof \
+			fdisk free getfacl getsebool id ip last lsattr lsblk lsmod lsof \
 			lspci mount mtr mvn netstat nmap php ping ping2 proftpd ps pv ss \
 			stat sysctl systemctl tcpdump traceroute tune2fs ulimit uptime vmstat wdiff;
 			do
 				if which $bin >/dev/null; then
 					$bin() {
-						\grc --colour=auto $0 "$@"
+						if [ -t 1 ]; then
+							\grc --colour=auto $0 "$@"
+						else
+							#command $0 "$@"
+							\grc --colour=off $0 "$@"
+						fi
 					}
 				fi
 		done
+		ls() {
+			command ls --color=auto
+		}
 	fi
 fi
 
