@@ -26,7 +26,7 @@ if (( $+commands[grc] )); then
 				fi
 		done
 		ls() {
-			command ls --color=auto
+			command ls --color=auto "$@"
 		}
 	fi
 fi
